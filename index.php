@@ -77,5 +77,6 @@ if (isset($_POST['parameter'])):
 endif;
 ?>
 
+<footer>See the open source code here : <a href="https://github.com/prabowomurti/themesh-solver">themesh-solver</a></footer>
 </body>
 </html>
