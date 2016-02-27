@@ -54,7 +54,7 @@ if (isset($_POST['parameter'])):
         die("Please input parameter\n");
 
     if ( ! isset($_POST['result']))
-        die("Please input second argument\n");
+        die("Please input the desired result\n");
 
     // check valid result
     $result = (int) $_POST['result'];
@@ -69,14 +69,15 @@ if (isset($_POST['parameter'])):
     for ($i = 0; $i < $combination; $i ++)
         $operators[] = str_pad(decbin($i), $count_numbers, '0', STR_PAD_LEFT);
 
-    // there is no way all numbers is subtracted, so we pop out the first element of array
-    unset($operators[0]);
+    // there is no way all numbers is subtracted, so we pop out the last element of array
+    array_pop($operators);
 
     // the loop
-    $loop = 1;
+    $loop = 0;
     $the_answer = '';
     foreach($operators as $operator):
         $comparator = 0;
+        $loop ++;
         $operator = str_split($operator);
         
         foreach ($numbers as $key => $number)
@@ -93,15 +94,14 @@ if (isset($_POST['parameter'])):
         
         $the_answer = '';
 
-        $loop ++;
     endforeach;
 
-    echo "Looping $loop times";
+    echo "Looping $loop time(s)";
     new_line();
     echo 'Numbers  : ', implode(',', $numbers);new_line();
     echo 'Result : ', $result;
     new_line();
-    echo $the_answer ? 'Answer : ' . $the_answer : 'No answer';
+    echo $the_answer ? '<strong>Answer : ' . $the_answer . '</strong>' : '<span style="color: red">No answer</span>';
     new_line();
     
 endif;
