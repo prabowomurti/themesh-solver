@@ -1,47 +1,76 @@
-<!DOCTYPE html >
-<html>
+<!DOCTYPE html>
+<html lang="en">
 <head>
-    <title>Themesh Game Solver -- v1.0</title>
+    <meta charset="utf-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+
+    <title>The Mesh Solver</title>
+    <link href="css/bootstrap.min.css" rel="stylesheet">
+    <!--[if lt IE 9]>
+    <script src="https://oss.maxcdn.com/html5shiv/3.7.2/html5shiv.min.js"></script>
+    <script src="https://oss.maxcdn.com/respond/1.4.2/respond.min.js"></script>
+    <![endif]-->
 </head>
 <body>
-<form method="post">
-    Please input the parameter, separated by a space. Eg: "5413 5"
-    <input type="text" name="parameter" autofocus />
-    <input type="submit" />
-</form>
+    <div class="container">
 
+        <div class="page-header">
+            <h2>The Mesh App Solver &#8212; v1.1</h2>
+        </div>
+
+        <div class="row">
+            <div class="col-xs-12">
+                <form method="post" >
+                    <div class="form-group">
+                        <label for="parameter">Parameter</label>
+                        <input type="number" name="parameter" min="1" id="parameter" class="form-control input-sm" required="required" autofocus placeholder="Eg : 1872" />
+                    </div>
+                    <div class="form-group">
+                        <label for="result">Result</label>
+                        <input type="number" name="result" min="1" id="result" class="form-control input-sm" required placeholder="Eg : 8" />
+                    </div>
+                    <button type="submit" class="btn btn-default btn-sm">Submit</button>
+                </form>
+            </div>
+        </div>
+
+        
 <?php
 if (isset($_POST['parameter'])):
 
+    /**
+     * Echo some <br />
+     * @param  integer $multiplier
+     */
     function new_line($multiplier = 1)
     {
         echo str_repeat("<br />", $multiplier);
     }
 
-    $argv = explode(' ', $_POST['parameter']);
+    $parameter = (int) $_POST['parameter'];
 
-    if ( empty($argv[0]))
-        die("Please input first argument\n");
+    if ( empty($parameter))
+        die("Please input parameter\n");
 
-    if ( ! isset($argv[1]))
+    if ( ! isset($_POST['result']))
         die("Please input second argument\n");
 
     // check valid result
-    $result = (int) $argv[1];
+    $result = (int) $_POST['result'];
     if (empty($result))
-        die("Second argument is invalid\n");
+        die("Result is invalid\n");
 
-    // sanitize argument
-    $arguments = preg_replace('/[^0-9][^-]/', '', $argv[0]);
-
-    // $additional_operators = substr_count('-', $arguments);
-    $numbers = str_split(preg_replace('/-/', '', $arguments));
+    $numbers = str_split($parameter);
 
     $count_numbers = count($numbers);
     $combination = pow(2, $count_numbers);
 
     for ($i = 0; $i < $combination; $i ++)
         $operators[] = str_pad(decbin($i), $count_numbers, '0', STR_PAD_LEFT);
+
+    // there is no way all numbers is subtracted, so we pop out the first element of array
+    unset($operators[0]);
 
     // the loop
     $loop = 1;
@@ -69,14 +98,17 @@ if (isset($_POST['parameter'])):
 
     echo "Looping $loop times";
     new_line();
+    echo 'Numbers  : ', implode(',', $numbers);new_line();
+    echo 'Result : ', $result;
+    new_line();
     echo $the_answer ? 'Answer : ' . $the_answer : 'No answer';
     new_line();
-    die();
-
     
 endif;
 ?>
+    <hr />
+    <footer>Source code : <a href="https://github.com/prabowomurti/themesh-solver">themesh-solver</a></footer>
+    </div> <!-- /container -->
 
-<footer>See the open source code here : <a href="https://github.com/prabowomurti/themesh-solver">themesh-solver</a></footer>
 </body>
 </html>
