@@ -20,8 +20,8 @@
         </div>
 
         <div class="row">
-            <div class="col-xs-12">
-                <form method="post" >
+            <div class="col-xs-12 col-lg-6 col-md-6">
+                <form method="post" action="apalah" onsubmit="return process()">
                     <div class="form-group">
                         <label for="parameter">Parameter</label>
                         <input type="number" name="parameter" min="1" id="parameter" class="form-control input-sm" required="required" autofocus placeholder="Eg : 1872" />
@@ -35,80 +35,40 @@
             </div>
         </div>
 
+        <div class="row">
+            <div class="col-xs-12 col-lg-6 col-md-6" id="the_answer">
+            </div>
+        </div>
         
-<?php
-if (isset($_POST['parameter'])):
-
-    /**
-     * Echo some <br />
-     * @param  integer $multiplier
-     */
-    function new_line($multiplier = 1)
-    {
-        echo str_repeat("<br />", $multiplier);
-    }
-
-    $parameter = (int) $_POST['parameter'];
-
-    if ( empty($parameter))
-        die("Please input parameter\n");
-
-    if ( ! isset($_POST['result']))
-        die("Please input the desired result\n");
-
-    // check valid result
-    $result = (int) $_POST['result'];
-    if (empty($result))
-        die("Result is invalid\n");
-
-    $numbers = str_split($parameter);
-
-    $count_numbers = count($numbers);
-    $combination = pow(2, $count_numbers);
-
-    for ($i = 0; $i < $combination; $i ++)
-        $operators[] = str_pad(decbin($i), $count_numbers, '0', STR_PAD_LEFT);
-
-    // there is no way all numbers is subtracted, so we pop out the last element of array
-    array_pop($operators);
-
-    // the loop
-    $loop = 0;
-    $the_answer = '';
-    foreach($operators as $operator):
-        $comparator = 0;
-        $loop ++;
-        $operator = str_split($operator);
-        
-        foreach ($numbers as $key => $number)
-        {
-            $op = pow(-1, $operator[$key]);
-            $comparator = $comparator + ($op * $number);
-            $the_answer .= ($op > 0 ? ' +' : ' -') . $number;
-        }
-
-        if ($comparator == $result)
-            break; // answer found
-        elseif ($comparator == 0)
-            echo 'Possible solution : ', $the_answer, "<br />";
-        
-        $the_answer = '';
-
-    endforeach;
-
-    echo "Looping $loop time(s)";
-    new_line();
-    echo 'Numbers  : ', implode(',', $numbers);new_line();
-    echo 'Result : ', $result;
-    new_line();
-    echo $the_answer ? '<strong>Answer : ' . $the_answer . '</strong>' : '<span style="color: red">No answer</span>';
-    new_line();
-    
-endif;
-?>
     <hr />
     <footer>Source code : <a href="https://github.com/prabowomurti/themesh-solver">themesh-solver</a></footer>
     </div> <!-- /container -->
+
+<script type="text/javascript">
+function process(e)
+{
+    if (!e) e = window.event;
+    e.preventDefault();
+
+    var xhttp;
+    var data;
+    xhttp = new XMLHttpRequest();
+    xhttp.onreadystatechange = function() {
+        if (xhttp.readyState == XMLHttpRequest.DONE && xhttp.status == 200) 
+        {
+            document.getElementById("the_answer").innerHTML = xhttp.responseText;
+        }
+    };
+
+    xhttp.open("POST", "process.php", true);
+    xhttp.setRequestHeader('Content-type', 'application/x-www-form-urlencoded');
+    data = 
+        'parameter=' + document.getElementById('parameter').value + 
+        '&result=' + document.getElementById('result').value;
+    xhttp.send(data);
+}
+
+</script>
 
 </body>
 </html>
