@@ -1,11 +1,6 @@
 <?php
 if (isset($_POST['parameter'])):
 
-    
-// echo '<pre>';
-// print_r($list);
-// echo '</pre>';
-// die();
 
     /**
      * Echo some <br />
@@ -147,7 +142,16 @@ do {
         {
             $sum_part = array_sum($part);
             
-            $rest = array_diff($combination, $part);
+            $temp_part = $part;
+            $rest = array_filter($combination, 
+                function ($val) use (&$temp_part) { 
+                    $key = array_search($val, $temp_part);
+                    if ( $key === false ) return true;
+                    unset($temp_part[$key]);
+                    return false;
+                }
+            );
+
             $sum_rest = array_sum($rest);
             if ($sum_part % 2 == 0)
             {
