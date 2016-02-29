@@ -14,10 +14,7 @@
 </head>
 <body>
     <div class="container">
-
-        <div class="page-header">
-            <h2>The Mesh App Solver &#8212; v1.1</h2>
-        </div>
+        <h2>The Mesh App Solver &#8212; v1.2</h2>
 
         <div class="row">
             <div class="col-xs-12 col-lg-6 col-md-6">

@@ -1,6 +1,12 @@
 <?php
 if (isset($_POST['parameter'])):
 
+    
+// echo '<pre>';
+// print_r($list);
+// echo '</pre>';
+// die();
+
     /**
      * Echo some <br />
      * @param  integer $multiplier
@@ -8,6 +14,77 @@ if (isset($_POST['parameter'])):
     function new_line($multiplier = 1)
     {
         echo str_repeat("<br />", $multiplier);
+    }
+
+    /**
+     * Echoing array of answer or possible solutions
+     * @param  array   $answer the array containing answer
+     * @param  boolean $flag   if true, show answer in a fancier way
+     */
+    function display_answer($answer = array(), $flag = false)
+    {
+        $string = '';
+        foreach($answer as $value)
+            $string .= $value > 0 ? ' +' . $value : ' ' . $value;
+
+        echo $flag ? '<strong>Answer : ' . $string . '</strong>' : $string;
+    }
+
+    /**
+     * Create combination from array
+     * 
+     * @param  array   $arrays 
+     * @param  integer $i      
+     * @return array all combination created          
+     */
+    function create_possible_solutions($arrays = array(), $i = 0)
+    {
+        if ( ! isset($arrays[$i])) {
+            return array();
+        }
+
+        if ($i == count($arrays) - 1) {
+            return $arrays[$i];
+        }
+
+        // get combinations from subsequent arrays
+        $tmp = create_possible_solutions($arrays, $i + 1);
+
+        $result = array();
+
+        // concat each array from tmp with each element from $arrays[$i]
+        foreach ($arrays[$i] as $v) {
+            foreach ($tmp as $t) {
+                $result[] = is_array($t) ? 
+                    array_merge(array($v), $t) :
+                    array($v, $t);
+            }
+        }
+
+        return $result;
+    }
+
+    /**
+     * Create all combination from possible solutions
+     * 
+     * @param  array  $a
+     * @return array    
+     */
+    function create_combination($a = array())
+    {
+        
+        $len  = count($a);
+        $list = array();
+
+        for($i = 1; $i < (1 << $len); $i++) {
+            $c = [];
+            for($j = 0; $j < $len; $j++)
+                if($i & (1 << $j))
+                    $c[]= $a[$j];
+                $list[] = $c;
+            }
+
+        return $list;
     }
 
     $parameter = (int) $_POST['parameter'];
@@ -25,45 +102,91 @@ if (isset($_POST['parameter'])):
 
     $numbers = str_split($parameter);
 
-    $count_numbers = count($numbers);
-    $combination = pow(2, $count_numbers);
+// using do - while so we can break peacefully instead of using die();
+do {
 
-    for ($i = 0; $i < $combination; $i ++)
-        $operators[] = str_pad(decbin($i), $count_numbers, '0', STR_PAD_LEFT);
+    // sanitizing input and create the negative number as a pair
+    foreach ($numbers as $key => $value)
+        $paired_numbers[$key] = array($value, -$value);
 
-    // there is no way all numbers is subtracted, so we pop out the last element of array
-    array_pop($operators);
+    $numbers = create_possible_solutions($paired_numbers);
+    array_pop($numbers); // pop up last element, since it's impossible to have negative numbers
 
-    // the loop
-    $loop = 0;
-    $the_answer = '';
-    foreach($operators as $operator):
-        $comparator = 0;
-        $loop ++;
-        $operator = str_split($operator);
-        
-        foreach ($numbers as $key => $number)
+    //=========================================
+    // METHOD #0, no additional operator
+    //=========================================
+    foreach ($numbers as $combination) 
+    {
+        if ( ! is_array($combination))
+            $combination = array($combination);
+
+        if (array_sum($combination) == $result)
         {
-            $op = pow(-1, $operator[$key]);
-            $comparator = $comparator + ($op * $number);
-            $the_answer .= ($op > 0 ? ' +' : ' -') . $number;
+            display_answer($combination, true);
+            break 2;
         }
+        elseif (array_sum($combination) == 0)
+        {
+            echo 'Possible answer : ';
+            display_answer($combination);
+            new_line();
+        }
+    }
 
-        if ($comparator == $result)
-            break; // answer found
-        elseif ($comparator == 0)
-            echo 'Possible solution : ', $the_answer, "<br />";
+    //=========================================
+    // METHOD #1, using only 1 operator
+    //=========================================
+    foreach ($numbers as $combination)
+    {
+        if ( ! is_array($combination))
+            $combination = array($combination);
+
+        $list = create_combination($combination); // 1, 2, -3 will produce 1, 2, -3, (1 2), (1, -3), (2, -3), (1, 2, -3)
+
+        foreach ($list as $part)
+        {
+            $sum_part = array_sum($part);
+            
+            $rest = array_diff($combination, $part);
+            $sum_rest = array_sum($rest);
+            if ($sum_part % 2 == 0)
+            {
+                $temp = $sum_part / 2 + $sum_rest;
+                if ($temp == $result) // got the winner
+                {
+                    echo '<strong>Answer : (', implode(',', $part), ')', '/2 ';
+                    display_answer($rest);
+                    echo '</strong>';
+                    break 3;
+                }
+                elseif ($temp == 0)
+                {
+                    echo 'Possible answer : (', implode(',', $part), ')', '/2 ';
+                    display_answer($rest);
+                    new_line();
+                }
+            }
+
+            $temp = $sum_part * 2 + $sum_rest;
+            if ($temp == $result) // the winner
+            {
+                echo '<strong>Answer : (', implode(',', $part), ')', 'x2 ';
+                display_answer($rest);
+                break 3;
+            }
+            elseif ($temp == 0)
+            {
+                echo 'Possible answer : (', implode(',', $part), ')', 'x2 ';
+                display_answer($rest);
+                new_line();
+            }
+        }
         
-        $the_answer = '';
+    } // end of METHOD #1
 
-    endforeach;
+    echo '<span style="color: red">No answer</span>';
 
-    echo "Looping $loop time(s)";
-    new_line();
-    echo 'Numbers  : ', implode(',', $numbers);new_line();
-    echo 'Result : ', $result;
-    new_line();
-    echo $the_answer ? '<strong>Answer : ' . $the_answer . '</strong>' : '<span style="color: red">No answer</span>';
-    new_line();
-    
+
+} while (0);
+
 endif;
