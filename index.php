@@ -17,7 +17,7 @@
         <h2>The Mesh App Solver &#8212; v1.2</h2>
 
         <div class="row">
-            <div class="col-xs-12 col-lg-6 col-md-6">
+            <div class="col-xs-8 col-sm-8 col-lg-4 col-md-4">
                 <form method="post" action="apalah" onsubmit="return process()">
                     <div class="form-group">
                         <label for="parameter">Parameter</label>
