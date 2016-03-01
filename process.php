@@ -15,12 +15,16 @@ if (isset($_POST['parameter'])):
      * Echoing array of answer or possible solutions
      * @param  array   $answer the array containing answer
      * @param  boolean $flag   if true, show answer in a fancier way
+     * @param  boolean $return   if true, return the string
      */
-    function display_answer($answer = array(), $flag = false)
+    function display_answer($answer = array(), $flag = false, $return = false)
     {
         $string = '';
         foreach($answer as $value)
             $string .= $value > 0 ? ' +' . $value : ' ' . $value;
+
+        if ($return)
+            return $flag ? '<strong>Answer : ' . $string . '</strong>' : $string;
 
         echo $flag ? '<strong>Answer : ' . $string . '</strong>' : $string;
     }
