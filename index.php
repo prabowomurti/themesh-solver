@@ -14,7 +14,7 @@
 </head>
 <body>
     <div class="container">
-        <h2>The Mesh App Solver &#8212; v1.2</h2>
+        <h2>The Mesh App Solver &#8212; v1.3</h2>
 
         <div class="row">
             <div class="col-xs-8 col-sm-8 col-lg-4 col-md-4">

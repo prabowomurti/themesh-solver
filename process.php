@@ -111,6 +111,10 @@ do {
     $numbers = create_possible_solutions($paired_numbers);
     array_pop($numbers); // pop up last element, since it's impossible to have negative numbers
 
+    // comparing the result with the highest possible value first
+    $lowest_possible_result = array_sum($numbers[0]);
+    $alternative_answer = '';
+
     //=========================================
     // METHOD #0, no additional operator
     //=========================================
@@ -129,6 +133,11 @@ do {
             echo 'Possible answer : ';
             display_answer($combination);
             new_line();
+        }
+        elseif (abs(array_sum($combination)) < $lowest_possible_result)
+        {
+            $lowest_possible_result = abs(array_sum($combination));
+            $alternative_answer = display_answer($combination, false, true);
         }
     }
 
@@ -157,7 +166,7 @@ do {
             );
 
             $sum_rest = array_sum($rest);
-            if ($sum_part % 2 == 0)
+            if ( ! ($sum_part & 1)) // we can only divide the even number
             {
                 $temp = $sum_part / 2 + $sum_rest;
                 if ($temp == $result) // got the winner
@@ -173,6 +182,18 @@ do {
                     display_answer($rest);
                     new_line();
                 }
+                elseif (abs($temp) < $lowest_possible_result)
+                {
+                    $lowest_possible_result = abs($temp);
+                    $alternative_answer = display_answer(
+                        array_merge(
+                            array_merge(
+                                array_merge(['('], $part),
+                                [')', '/2']),
+                            $rest)
+                        , false, true);
+
+                }
             }
 
             $temp = $sum_part * 2 + $sum_rest;
@@ -180,6 +201,7 @@ do {
             {
                 echo '<strong>Answer : (', implode(',', $part), ')', 'x2 ';
                 display_answer($rest);
+                echo '</strong>';
                 break 3;
             }
             elseif ($temp == 0)
@@ -187,6 +209,17 @@ do {
                 echo 'Possible answer : (', implode(',', $part), ')', 'x2 ';
                 display_answer($rest);
                 new_line();
+            }
+            elseif (abs($temp) < $lowest_possible_result)
+            {
+                $lowest_possible_result = abs($temp);
+                $alternative_answer = display_answer(
+                    array_merge(
+                        array_merge(
+                            array_merge(['('], $part),
+                            [')', 'x2']),
+                        $rest)
+                    , false, true);
             }
         }
         
@@ -196,5 +229,8 @@ do {
 
 
 } while (0);
+
+new_line();
+echo 'Alternative answer : ', $alternative_answer;
 
 endif;
